@@ -68,4 +68,21 @@
       <Filter>源文件</Filter>
     </None>
   </ItemGroup>
+  <ItemGroup>
+    <Text Include="data\users.txt">
+      <Filter>资源文件</Filter>
+    </Text>
+    <Text Include="data\words_junior.txt">
+      <Filter>资源文件</Filter>
+    </Text>
+    <Text Include="data\words_primary.txt">
+      <Filter>资源文件</Filter>
+    </Text>
+    <Text Include="data\words_senior.txt">
+      <Filter>资源文件</Filter>
+    </Text>
+    <Text Include="data\wrong.txt">
+      <Filter>资源文件</Filter>
+    </Text>
+  </ItemGroup>
 </Project>

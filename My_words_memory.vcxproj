@@ -148,6 +148,13 @@
     <None Include="data\小学英语词汇表.doc" />
     <None Include="data\高中英语词汇表.doc" />
   </ItemGroup>
+  <ItemGroup>
+    <Text Include="data\users.txt" />
+    <Text Include="data\words_junior.txt" />
+    <Text Include="data\words_primary.txt" />
+    <Text Include="data\words_senior.txt" />
+    <Text Include="data\wrong.txt" />
+  </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">
   </ImportGroup>

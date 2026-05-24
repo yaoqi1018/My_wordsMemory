@@ -1,5 +1,5 @@
 """
-convert_doc.py  ——  将 .doc 词汇表转换为 GBK 编码的 .txt 文件。
+convert_doc.py  ——  将 .doc 词汇表转换为 UTF-8 编码的 .txt 文件。
 不依赖 Microsoft Word，使用 olefile 库直接读取 OLE 复合文档。
 
 用法：python convert_doc.py
@@ -114,7 +114,7 @@ def convert_one(level_name, doc_file, txt_file):
         print(f"[警告] {level_name}: 未解析到任何单词！")
         return
 
-    with open(txt_path, "w", encoding="gbk", errors="replace") as f:
+    with open(txt_path, "w", encoding="utf-8") as f:
         for eng, pho, chn in words:
             f.write(f"{eng}\t{pho}\t{chn}\n")
 

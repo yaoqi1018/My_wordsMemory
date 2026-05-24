@@ -16,20 +16,6 @@ static const char* getTxtPath(Level level) {
 
 // ---------- 辅助 ----------
 
-// GBK → UTF-8
-static string gbk_to_utf8(const string& gbk) {
-    if (gbk.empty()) return "";
-    int wlen = MultiByteToWideChar(936, 0, gbk.c_str(), -1, NULL, 0);
-    if (wlen <= 0) return "";
-    wstring wstr(wlen - 1, L'\0');
-    MultiByteToWideChar(936, 0, gbk.c_str(), -1, &wstr[0], wlen);
-    int ulen = WideCharToMultiByte(CP_UTF8, 0, wstr.c_str(), -1, NULL, 0, NULL, NULL);
-    if (ulen <= 0) return "";
-    string utf8(ulen - 1, '\0');
-    WideCharToMultiByte(CP_UTF8, 0, wstr.c_str(), -1, &utf8[0], ulen, NULL, NULL);
-    return utf8;
-}
-
 static vector<string> split(const string& s, char delim) {
     vector<string> result;
     string token;
@@ -67,9 +53,9 @@ vector<Word> loadWords(Level level) {
 
         Word w;
         w.id       = id++;
-        w.english  = gbk_to_utf8(parts[0]);
-        w.phonetic = gbk_to_utf8(parts[1]);
-        w.chinese  = gbk_to_utf8(parts[2]);
+        w.english  = parts[0];
+        w.phonetic = parts[1];
+        w.chinese  = parts[2];
         words.push_back(w);
     }
     fclose(fp);
