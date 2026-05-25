@@ -1,10 +1,4 @@
-"""
-convert_doc.py  ——  将 .doc 词汇表转换为 UTF-8 编码的 .txt 文件。
-不依赖 Microsoft Word，使用 olefile 库直接读取 OLE 复合文档。
 
-用法：python convert_doc.py
-依赖：pip install olefile
-"""
 import os
 import olefile
 

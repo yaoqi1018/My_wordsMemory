@@ -72,6 +72,9 @@
     <Text Include="data\users.txt">
       <Filter>资源文件</Filter>
     </Text>
+    <Text Include="data\wrong.txt">
+      <Filter>资源文件</Filter>
+    </Text>
     <Text Include="data\words_junior.txt">
       <Filter>资源文件</Filter>
     </Text>
@@ -79,9 +82,6 @@
       <Filter>资源文件</Filter>
     </Text>
     <Text Include="data\words_senior.txt">
-      <Filter>资源文件</Filter>
-    </Text>
-    <Text Include="data\wrong.txt">
       <Filter>资源文件</Filter>
     </Text>
   </ItemGroup>
