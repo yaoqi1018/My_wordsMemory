@@ -1,9 +1,7 @@
 #pragma once
 #include "common.h"
 
-// 6 个页面函数，每个返回下一个要去的页面
-Page showLoginPage();
-Page showRegisterPage();
+// 4 个页面函数，每个返回下一个要去的页面
 Page showMainMenu();
 Page showQuizPage();
 Page showScorePage();

@@ -94,12 +94,11 @@ int main() {
 
     while (true) {
         switch (page) {
-        case PAGE_LOGIN:    page = showLoginPage();    break;
-        case PAGE_REGISTER: page = showRegisterPage(); break;
-        case PAGE_MENU:     page = showMainMenu();     break;
-        case PAGE_QUIZ:     page = showQuizPage();     break;
-        case PAGE_SCORE:    page = showScorePage();    break;
-        case PAGE_WRONG:    page = showWrongBookPage(); break;
+        case PAGE_MENU:     page = showMainMenu();      break;
+        case PAGE_QUIZ:     page = showQuizPage();      break;
+        case PAGE_SCORE:    page = showScorePage();     break;
+        case PAGE_WRONG:    page = showWrongBookPage();  break;
+        case PAGE_EXIT:     closegraph(); return 0;
         }
     }
 

@@ -74,261 +74,7 @@ static void drawBackground() {
 }
 
 // ================================================================
-// 1. 登录页面
-// ================================================================
-Page showLoginPage() {
-    string username, password;
-    int    focus = 0;     // 0=无, 1=用户名, 2=密码
-    string error;
-
-    // 控件位置
-    const int ix = 310, iy1 = 160, iy2 = 230, iw = 280, ih = 38;
-    const int bx1 = 250, by = 320, bw = 130, bh = 42;
-    const int bx2 = 420;
-
-    BeginBatchDraw();
-    while (true) {
-        drawBackground();
-
-        // 标题
-        settextcolor(CLR_TITLE);
-        settextstyle(34, 0, _T("微软雅黑"));
-        draw_text_center(60, "背单词小程序");
-        settextstyle(16, 0, _T("微软雅黑"));
-        settextcolor(CLR_TEXT);
-        draw_text_center(108, "英语词汇学习助手");
-
-        // 标签
-        settextstyle(20, 0, _T("微软雅黑"));
-        settextcolor(CLR_TEXT);
-        draw_text(210, iy1 + 6, "用户名:");
-        draw_text(210, iy2 + 6, "密  码:");
-
-        // 输入框占位提示
-        if (username.empty() && focus != 1) {
-            settextcolor(RGB(180, 180, 180));
-            settextstyle(18, 0, _T("微软雅黑"));
-            setbkmode(TRANSPARENT);
-            outtextxy(ix + 8, iy1 + 8, to_wstr("请输入用户名").c_str());
-        }
-        drawInputBox(ix, iy1, iw, ih, username, focus == 1, false);
-
-        if (password.empty() && focus != 2) {
-            settextcolor(RGB(180, 180, 180));
-            settextstyle(18, 0, _T("微软雅黑"));
-            setbkmode(TRANSPARENT);
-            outtextxy(ix + 8, iy2 + 8, to_wstr("请输入密码").c_str());
-        }
-        drawInputBox(ix, iy2, iw, ih, password, focus == 2, true);
-
-        // ---- 鼠标处理 ----
-        POINT pt;
-        GetCursorPos(&pt);
-        ScreenToClient(GetHWnd(), &pt);
-
-        bool hoverLogin = in_rect(pt.x, pt.y, bx1, by, bw, bh);
-        bool hoverReg   = in_rect(pt.x, pt.y, bx2, by, bw, bh);
-
-        while (MouseHit()) {
-            MOUSEMSG msg = GetMouseMsg();
-            if (msg.uMsg == WM_LBUTTONDOWN) {
-                int mx = msg.x, my = msg.y;
-                if (in_rect(mx, my, ix, iy1, iw, ih))
-                    { focus = 1; error.clear(); }
-                else if (in_rect(mx, my, ix, iy2, iw, ih))
-                    { focus = 2; error.clear(); }
-                else if (in_rect(mx, my, bx1, by, bw, bh)) {
-                    if (username.empty() || password.empty())
-                        error = "用户名和密码不能为空";
-                    else if (loginUser(username, password)) {
-                        g_currentUser = username;
-                        EndBatchDraw();
-                        return PAGE_MENU;
-                    } else
-                        error = "用户名或密码错误";
-                }
-                else if (in_rect(mx, my, bx2, by, bw, bh)) {
-                    EndBatchDraw();
-                    return PAGE_REGISTER;
-                }
-                else
-                    focus = 0;
-            }
-        }
-
-        // ---- 键盘输入（EasyX 文字输入必须用 WM_CHAR） ----
-        ExMessage kmsg;
-        while (peekmessage(&kmsg, EX_CHAR)) {
-            if (kmsg.message != WM_CHAR) continue;
-            char c = (char)kmsg.ch;
-            string* target = (focus == 1) ? &username : (focus == 2) ? &password : nullptr;
-            if (target) {
-                if (c == '\b') {  // 退格
-                    if (!target->empty()) target->pop_back();
-                } else if (c >= 32) {
-                    *target += c;
-                }
-            }
-            // 回车快捷登录
-            if (c == '\r' && focus > 0) {
-                if (username.empty() || password.empty())
-                    error = "用户名和密码不能为空";
-                else if (loginUser(username, password)) {
-                    g_currentUser = username;
-                    EndBatchDraw();
-                    return PAGE_MENU;
-                } else
-                    error = "用户名或密码错误";
-            }
-        }
-
-        // 绘制按钮
-        drawButton(bx1, by, bw, bh, "登  录", hoverLogin);
-        drawButton(bx2, by, bw, bh, "注  册", hoverReg);
-
-        // 错误提示
-        if (!error.empty()) {
-            settextcolor(CLR_WRONG);
-            settextstyle(16, 0, _T("微软雅黑"));
-            draw_text_center(395, error);
-        }
-
-        FlushBatchDraw();
-        Sleep(16);
-    }
-    EndBatchDraw();
-}
-
-// ================================================================
-// 2. 注册页面
-// ================================================================
-Page showRegisterPage() {
-    string username, password, confirm;
-    int    focus = 0;
-    string error;
-
-    const int ix = 310, iy1 = 155, iy2 = 220, iy3 = 285, iw = 280, ih = 38;
-    const int bx1 = 290, by = 355, bw = 100, bh = 40;
-    const int bx2 = 410;
-
-    BeginBatchDraw();
-    while (true) {
-        drawBackground();
-
-        settextcolor(CLR_TITLE);
-        settextstyle(34, 0, _T("微软雅黑"));
-        draw_text_center(60, "用户注册");
-
-        // 标签
-        settextstyle(20, 0, _T("微软雅黑"));
-        settextcolor(CLR_TEXT);
-        draw_text(210, iy1 + 6, "用户名:");
-        draw_text(210, iy2 + 6, "密  码:");
-        draw_text(190, iy3 + 6, "确认密码:");
-
-        // 占位提示
-        if (username.empty() && focus != 1) {
-            settextcolor(RGB(180, 180, 180)); settextstyle(18, 0, _T("微软雅黑"));
-            setbkmode(TRANSPARENT);
-            outtextxy(ix + 8, iy1 + 8, to_wstr("请输入用户名").c_str());
-        }
-        drawInputBox(ix, iy1, iw, ih, username, focus == 1, false);
-
-        if (password.empty() && focus != 2) {
-            settextcolor(RGB(180, 180, 180)); settextstyle(18, 0, _T("微软雅黑"));
-            setbkmode(TRANSPARENT);
-            outtextxy(ix + 8, iy2 + 8, to_wstr("请输入密码").c_str());
-        }
-        drawInputBox(ix, iy2, iw, ih, password, focus == 2, true);
-
-        if (confirm.empty() && focus != 3) {
-            settextcolor(RGB(180, 180, 180)); settextstyle(18, 0, _T("微软雅黑"));
-            setbkmode(TRANSPARENT);
-            outtextxy(ix + 8, iy3 + 8, to_wstr("请再次输入密码").c_str());
-        }
-        drawInputBox(ix, iy3, iw, ih, confirm, focus == 3, true);
-
-        // ---- 鼠标处理 ----
-        POINT pt;
-        GetCursorPos(&pt);
-        ScreenToClient(GetHWnd(), &pt);
-
-        bool hoverReg  = in_rect(pt.x, pt.y, bx1, by, bw, bh);
-        bool hoverBack = in_rect(pt.x, pt.y, bx2, by, bw, bh);
-
-        while (MouseHit()) {
-            MOUSEMSG msg = GetMouseMsg();
-            if (msg.uMsg == WM_LBUTTONDOWN) {
-                int mx = msg.x, my = msg.y;
-                if (in_rect(mx, my, ix, iy1, iw, ih))      { focus = 1; error.clear(); }
-                else if (in_rect(mx, my, ix, iy2, iw, ih)) { focus = 2; error.clear(); }
-                else if (in_rect(mx, my, ix, iy3, iw, ih)) { focus = 3; error.clear(); }
-                else if (in_rect(mx, my, bx1, by, bw, bh)) {
-                    if (username.empty() || password.empty())
-                        error = "用户名和密码不能为空";
-                    else if (password != confirm)
-                        error = "两次密码输入不一致";
-                    else if (registerUser(username, password)) {
-                        g_currentUser = username;
-                        EndBatchDraw();
-                        return PAGE_MENU;
-                    } else
-                        error = "用户名已存在，请换一个";
-                }
-                else if (in_rect(mx, my, bx2, by, bw, bh)) {
-                    EndBatchDraw();
-                    return PAGE_LOGIN;
-                }
-                else
-                    focus = 0;
-            }
-        }
-
-        // ---- 键盘输入（EasyX 文字输入必须用 WM_CHAR） ----
-        ExMessage kmsg;
-        while (peekmessage(&kmsg, EX_CHAR)) {
-            if (kmsg.message != WM_CHAR) continue;
-            char c = (char)kmsg.ch;
-            string* target = nullptr;
-            if (focus == 1) target = &username;
-            else if (focus == 2) target = &password;
-            else if (focus == 3) target = &confirm;
-
-            if (target) {
-                if (c == '\b') { if (!target->empty()) target->pop_back(); }
-                else if (c >= 32) { *target += c; }
-            }
-            if (c == '\r' && focus > 0) {
-                if (username.empty() || password.empty())
-                    error = "用户名和密码不能为空";
-                else if (password != confirm)
-                    error = "两次密码输入不一致";
-                else if (registerUser(username, password)) {
-                    g_currentUser = username;
-                    EndBatchDraw();
-                    return PAGE_MENU;
-                } else
-                    error = "用户名已存在，请换一个";
-            }
-        }
-
-        drawButton(bx1, by, bw, bh, "注  册", hoverReg);
-        drawButton(bx2, by, bw, bh, "返  回", hoverBack);
-
-        if (!error.empty()) {
-            settextcolor(CLR_WRONG);
-            settextstyle(16, 0, _T("微软雅黑"));
-            draw_text_center(420, error);
-        }
-
-        FlushBatchDraw();
-        Sleep(16);
-    }
-    EndBatchDraw();
-}
-
-// ================================================================
-// 3. 主菜单页面
+// 1. 主菜单页面
 // ================================================================
 Page showMainMenu() {
     Level  selLevel = LV_PRIMARY;
@@ -376,7 +122,7 @@ Page showMainMenu() {
                 if (in_rect(mx, my, logoutX, logoutY, logoutW, logoutH)) {
                     g_currentUser = "";
                     EndBatchDraw();
-                    return PAGE_LOGIN;
+                    return PAGE_EXIT;
                 }
                 // 数量输入框
                 if (in_rect(mx, my, countX, countY, countW, countH)) {
@@ -497,7 +243,7 @@ Page showMainMenu() {
 }
 
 // ================================================================
-// 4. 答题页面
+// 2. 答题页面
 // ================================================================
 Page showQuizPage() {
     bool waiting = false;      // 是否在等待跳下一题
@@ -643,7 +389,7 @@ Page showQuizPage() {
 }
 
 // ================================================================
-// 5. 成绩页面
+// 3. 成绩页面
 // ================================================================
 Page showScorePage() {
     int correct = getCorrectNum();
@@ -710,7 +456,7 @@ Page showScorePage() {
 }
 
 // ================================================================
-// 6. 错题本页面
+// 4. 错题本页面
 // ================================================================
 Page showWrongBookPage() {
     vector<Word> wrongWords = getWrongWords(g_currentUser);
